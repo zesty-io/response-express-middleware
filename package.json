@@ -4,7 +4,7 @@
   "description": "Standardizes and structures express.js responses",
   "main": "index.js",
   "scripts": {
-    "lint": "./node_modules/.bin/eslint src/",
+    "lint": "./node_modules/.bin/eslint ./*.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Stuart Runyan",
