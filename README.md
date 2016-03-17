@@ -58,8 +58,8 @@ _Example response_
 By default this middleware will prefix all the methods with `res` generating methods with signatures of `res200`, `res404`, etc... This prefix can be customized to your usage prefences by providing a prefix string to the module when use it as middleware.
 
 __Example custom prefix__
-	
-	const responses = require('response-express-middlware')
+  
+    const responses = require('response-express-middlware')
     app.use(responses('send'))
     
     // Response method signatures will now be
