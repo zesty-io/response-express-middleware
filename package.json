@@ -1,5 +1,5 @@
 {
-  "name": "express-responses",
+  "name": "response-express-middleware",
   "version": "1.0.0",
   "description": "Standardizes and structures express.js responses",
   "main": "index.js",
