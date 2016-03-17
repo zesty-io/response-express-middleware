@@ -32,7 +32,7 @@ This is intended as global middleware to be added before any route handling.
     const responses = require('response-express-middlware')
     
     // Register middleware
-    app.use(responses)
+    app.use(responses())
 
 This will register methods onto the `res` object in the form of `res200`, `res404`, etc... Each method takes 2 parameters, a custom message and an object of options to override the default model. 
 
@@ -52,6 +52,20 @@ _Example response_
       data: [{...}],
       error: ''
     }
+
+### Custom Prefix
+
+By default this middleware will prefix all the methods with `res` generating methods with signatures of `res200`, `res404`, etc... This prefix can be customized to your usage prefences by providing a prefix string to the module when use it as middleware.
+
+__Example custom prefix__
+	
+	const responses = require('response-express-middlware')
+    app.use(responses('send'))
+    
+    // Response method signatures will now be
+    // registered like this.
+    res.send200()
+
 
 ## Developing
 
