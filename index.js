@@ -1,6 +1,6 @@
 'use strict'
 
-const defaultMessages = {
+const statusMessages = {
   200: 'OK',
   201: 'Created',
   202: 'Accepted',
@@ -31,6 +31,7 @@ const defaultMessages = {
 const respondCustom = function(overrides = {}) {
   let data = Object.assign({
     message: '',
+    status: '',
     data: null
   }, overrides)
 
@@ -38,9 +39,9 @@ const respondCustom = function(overrides = {}) {
   data.code = this.statusCode
 
   // If there isn't a message already, try to populate a default message for the status code
-  if (data.message === '') {
-    if (defaultMessages.hasOwnProperty(this.statusCode)) {
-      data.message = defaultMessages[this.statusCode]
+  if (data.status === '') {
+    if (statusMessages.hasOwnProperty(this.statusCode)) {
+      data.status = statusMessages[this.statusCode]
     }
   }
 
