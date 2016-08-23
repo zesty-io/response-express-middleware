@@ -4,23 +4,26 @@
 
 The http status codes follow the [w3c spec](https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.9).
 
+
 ## Message Model
+
 ```js
-    {
-      // Custom author provided message
-      message: '',
+{
+  // Custom author provided message
+  message: '',
 
-      // Human readable status message
-      status: '',
+  // Human readable status message
+  status: '',
 
-      // Http status code number
-      code: '',
+  // Http status code number
+  code: '',
 
-      // If this request returned data
-      // Can be an array or object
-      data: []
-    }
-```
+  // If this request returned data
+  // Can be an array or object
+  data: []
+}
+ ```
+
 
 ## Usage - Configuration
 
@@ -33,6 +36,7 @@ This is intended as global middleware to be added before any route handling.
     app.use(respond)
 
 This will register the `respond()` method on the Express `res` object.
+
 
 ## Usage - Examples
 
@@ -62,6 +66,7 @@ res.status(201).custom({
   specialProp: true
 })
 ```
+
 
 ## Developing
 

@@ -51,19 +51,19 @@ const statusMessages = {
 /**
  * Send a response and optionally set the message and/or data
  *
- * @param {string} [message]
- * @param {object} [data]
+ * @param {string} [msg]
+ * @param {object} [body]
  */
-function respond(msg, body) {
+function respond(msg, data) {
   let response = {}
 
   if (typeof msg === typeof '') {
     response.message = msg
 
-    // When message is a string and body was
+    // When message is a string and data was
     // supplied, send it as data
-    if (body) {
-      response.data = body
+    if (data) {
+      response.data = data
     }
 
   } else {
@@ -73,6 +73,11 @@ function respond(msg, body) {
   this.custom(response)
 }
 
+/**
+ * Sends a custom HTTP response
+ * @method custom
+ * @param  {object} [override]
+ */
 function custom(override) {
   let response = Object.assign({
     message: '',
