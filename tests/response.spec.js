@@ -79,7 +79,7 @@ test.cb('Send a completely custom response. Message or data is required.', (t) =
   t.plan(3)
 
   app.get('/custom', function (req, res) {
-    res.status(200).respond({
+    res.status(200).custom({
       message: 'custom message',
       data: {test: true},
       custom: 'property'
@@ -97,6 +97,32 @@ test.cb('Send a completely custom response. Message or data is required.', (t) =
       t.is(res.body.message, 'custom message')
       t.is(res.body.data.test, true)
       t.is(res.body.custom, 'property')
+      t.end()
+    })
+})
+
+test.cb('Edge case: respond with an entity that contains `message` or `data` properties', (t) => {
+  t.plan(3)
+
+  app.get('/edge-case', function (req, res) {
+    res.status(200).respond({
+      message: 'custom message',
+      data: {test: true},
+      custom: 'property'
+    })
+  })
+
+  request(app)
+    .get('/edge-case')
+    .expect(200)
+    .expect('Content-Type', /json/)
+    .end((e, res) => {
+      if (e) {
+        t.fail(e.message)
+      }
+      t.is(res.body.message, '')
+      t.is(res.body.data.message, 'custom message')
+      t.is(res.body.data.data.test, true)
       t.end()
     })
 })

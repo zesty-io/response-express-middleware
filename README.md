@@ -56,7 +56,7 @@ res.status(201).respond(data)
 
 Send a completely custom response. Message or data is required.
 ```js
-res.status(201).respond({
+res.status(201).custom({
   message: 'custom response overrides',
   data: data,
   specialProp: true

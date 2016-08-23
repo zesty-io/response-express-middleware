@@ -19,8 +19,9 @@
  * @param res
  * @param next
  */
-module.exports = function respond(req, res, next) {
-  res.respond = customResponse.bind(res)
+module.exports = function (req, res, next) {
+  res.respond = respond.bind(res)
+  res.custom = custom.bind(res)
   next()
 }
 
@@ -53,12 +54,8 @@ const statusMessages = {
  * @param {string} [message]
  * @param {object} [data]
  */
-function customResponse(msg, body) {  
-  let response = {
-    message: '',
-    status: '',
-    data: null
-  }
+function respond(msg, body) {
+  let response = {}
 
   if (typeof msg === typeof '') {
     response.message = msg
@@ -70,15 +67,18 @@ function customResponse(msg, body) {
     }
 
   } else {
-    if (msg.data || msg.message) {
-      // When these properties are present the intent
-      // is to override the whole response
-      response = Object.assign(response, msg)
-    } else {
-      // Just set the message as data
-      response.data = msg
-    }
+    response.data = msg
   }
+
+  this.custom(response)
+}
+
+function custom(override) {
+  let response = Object.assign({
+    message: '',
+    status: '',
+    data: null
+  }, override)
 
   // If there isn't a status already, try to populate
   // a default status for the status code
