@@ -19,7 +19,7 @@
  * @param res
  * @param next
  */
-module.exports = function (req, res, next) {
+module.exports = function(req, res, next) {
   res.respond = respond.bind(res)
   res.custom = custom.bind(res)
   next()
