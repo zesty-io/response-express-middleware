@@ -53,7 +53,7 @@ const statusMessages = {
  * @param {string} [message]
  * @param {object} [data]
  */
-function customResponse(msg, body) {
+function customResponse(msg, body) {  
   let response = {
     message: '',
     status: '',
