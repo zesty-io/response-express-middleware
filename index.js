@@ -1,5 +1,30 @@
 'use strict'
 
+/**
+ * Middleware that binds our .respond() methods
+ *
+ * Note: for .respond(), data cannot be a string (because it will be interpreted as the message)
+ *
+ * Usage:
+ *
+ * res.status(201).respond({message: 'custom response overrides', data: data, specialProp: true})
+ * res.status(201).respond('This was totally created')
+ * res.status(201).respond('Check this out', data)
+ * res.status(201).respond(data)
+ * res.respond('Here is some data', data)
+ * res.respond('Your request was totally cool')
+ * res.respond(data)
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
+module.exports = function(req, res, next) {
+  res.respond = respond.bind(res)
+  res.custom = custom.bind(res)
+  next()
+}
+
 const statusMessages = {
   200: 'OK',
   201: 'Created',
@@ -24,83 +49,53 @@ const statusMessages = {
 }
 
 /**
- * Send a response and override defaults in our base response
+ * Send a response and optionally set the message and/or data
  *
- * @param {object} [overrides]
+ * @param {string} [msg]
+ * @param {object} [body]
  */
-const respondCustom = function(overrides = {}) {
-  let data = Object.assign({
+function respond(msg, data) {
+  let response = {}
+
+  if (typeof msg === typeof '') {
+    response.message = msg
+
+    // When message is a string and data was
+    // supplied, send it as data
+    if (data) {
+      response.data = data
+    }
+
+  } else {
+    response.data = msg
+  }
+
+  this.custom(response)
+}
+
+/**
+ * Sends a custom HTTP response
+ * @method custom
+ * @param  {object} [override]
+ */
+function custom(override) {
+  let response = Object.assign({
     message: '',
     status: '',
     data: null
-  }, overrides)
+  }, override)
 
-  // Set a property "code" on the response from our current status code
-  data.code = this.statusCode
-
-  // If there isn't a message already, try to populate a default message for the status code
-  if (data.status === '') {
+  // If there isn't a status already, try to populate
+  // a default status for the status code
+  if (response.status === '') {
     if (statusMessages.hasOwnProperty(this.statusCode)) {
-      data.status = statusMessages[this.statusCode]
+      response.status = statusMessages[this.statusCode]
     }
   }
 
-  // Send the response
-  this.send(data)
+  // Status codes must be set by
+  // expressjs `status()` method
+  response.code = this.statusCode
 
-}
-
-/**
- * Send a response and optionally set the message and/or data
- *
- * @param {string} [message]
- * @param {object} [data]
- */
-const respond = function() {
-
-  let userOverrides = {}
-
-  // If there are two arguments, we expect them to be (message: String, objectProps: Object)
-  if (arguments.length === 2) {
-    userOverrides = arguments[1]
-    userOverrides.message = arguments[0]
-  }
-
-  // If there is one argument, we will accept either message:String OR objectProps:Any-non-string
-  else if (arguments.length === 1) {
-    if (typeof arguments[0] === typeof '') {
-      userOverrides.message = arguments[0]
-    } else if (typeof arguments[0] === typeof {}) {
-      userOverrides = {data: arguments[0]}
-    }
-  }
-
-  respondCustom.call(this, userOverrides)
-
-}
-
-/**
- * Middleware that binds our .respond() and .respondCustom() methods
- *
- * Note: for .respond(), data cannot be a string (because it will be interpreted as the message)
- *
- * Usage:
- *
- * res.status(201).respondCustom({message: 'custom response overrides', data: data, specialProp: true})
- *
- * res.status(201).respond('This was totally created')
- * res.status(201).respond('Check this out', data)
- * res.status(201).respond(data)
- * res.respond('Here is some data', data)
- * res.respond('Your request was totally cool')
- * res.respond(data)
- *
- * @param req
- * @param res
- * @param next
- */
-module.exports = function bindRespondMethods(req, res, next) {
-  res.respond = respond.bind(res)
-  res.respondCustom = respondCustom.bind(res)
-  next()
+  this.send(response)
 }
