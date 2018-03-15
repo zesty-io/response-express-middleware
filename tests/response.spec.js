@@ -9,10 +9,10 @@ let app = express()
 
 app.use(respond)
 
-test.cb('Respond with a custom message', (t) => {
+test.cb('Respond with a custom message', t => {
   t.plan(1)
 
-  app.get('/message', function (req, res) {
+  app.get('/message', function(req, res) {
     res.status(200).respond('message')
   })
 
@@ -29,10 +29,10 @@ test.cb('Respond with a custom message', (t) => {
     })
 })
 
-test.cb('Respond with a custom message and data', (t) => {
+test.cb('Respond with a custom message and data', t => {
   t.plan(2)
 
-  app.get('/message-and-data', function (req, res) {
+  app.get('/message-and-data', function(req, res) {
     res.status(200).respond('message', {
       test: true
     })
@@ -52,10 +52,38 @@ test.cb('Respond with a custom message and data', (t) => {
     })
 })
 
-test.cb('Respond with just data. No message is sent.', (t) => {
+test.cb('Respond with a custom message, data and meta', t => {
+  t.plan(1)
+
+  app.get('/meta', function(req, res) {
+    res.status(200).respond(
+      'message',
+      {
+        test: true
+      },
+      {
+        metaProp: 'meta'
+      }
+    )
+  })
+
+  request(app)
+    .get('/meta')
+    .expect(200)
+    .expect('Content-Type', /json/)
+    .end((e, res) => {
+      if (e) {
+        t.fail(e.message)
+      }
+      t.is(res.body.meta.metaProp, 'meta')
+      t.end()
+    })
+})
+
+test.cb('Respond with just data. No message is sent.', t => {
   t.plan(2)
 
-  app.get('/data', function (req, res) {
+  app.get('/data', function(req, res) {
     res.status(200).respond({
       test: true
     })
@@ -75,54 +103,60 @@ test.cb('Respond with just data. No message is sent.', (t) => {
     })
 })
 
-test.cb('Send a completely custom response. Message or data is required.', (t) => {
-  t.plan(3)
+test.cb(
+  'Send a completely custom response. Message or data is required.',
+  t => {
+    t.plan(3)
 
-  app.get('/custom', function (req, res) {
-    res.status(200).custom({
-      message: 'custom message',
-      data: {test: true},
-      custom: 'property'
+    app.get('/custom', function(req, res) {
+      res.status(200).custom({
+        message: 'custom message',
+        data: { test: true },
+        custom: 'property'
+      })
     })
-  })
 
-  request(app)
-    .get('/custom')
-    .expect(200)
-    .expect('Content-Type', /json/)
-    .end((e, res) => {
-      if (e) {
-        t.fail(e.message)
-      }
-      t.is(res.body.message, 'custom message')
-      t.is(res.body.data.test, true)
-      t.is(res.body.custom, 'property')
-      t.end()
+    request(app)
+      .get('/custom')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .end((e, res) => {
+        if (e) {
+          t.fail(e.message)
+        }
+        t.is(res.body.message, 'custom message')
+        t.is(res.body.data.test, true)
+        t.is(res.body.custom, 'property')
+        t.end()
+      })
+  }
+)
+
+test.cb(
+  'Edge case: respond with an entity that contains `message` or `data` properties',
+  t => {
+    t.plan(3)
+
+    app.get('/edge-case', function(req, res) {
+      res.status(200).respond({
+        message: 'custom message',
+        data: { test: true },
+        custom: 'property'
+      })
     })
-})
 
-test.cb('Edge case: respond with an entity that contains `message` or `data` properties', (t) => {
-  t.plan(3)
-
-  app.get('/edge-case', function (req, res) {
-    res.status(200).respond({
-      message: 'custom message',
-      data: {test: true},
-      custom: 'property'
-    })
-  })
-
-  request(app)
-    .get('/edge-case')
-    .expect(200)
-    .expect('Content-Type', /json/)
-    .end((e, res) => {
-      if (e) {
-        t.fail(e.message)
-      }
-      t.is(res.body.message, '')
-      t.is(res.body.data.message, 'custom message')
-      t.is(res.body.data.data.test, true)
-      t.end()
-    })
-})
+    request(app)
+      .get('/edge-case')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .end((e, res) => {
+        if (e) {
+          t.fail(e.message)
+        }
+        t.is(res.body.message, '')
+        t.is(res.body.data.message, 'custom message')
+        t.is(res.body.data.data.test, true)
+        t.end()
+      })
+  }
+)
