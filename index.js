@@ -40,7 +40,7 @@ const statusMessages = {
   408: 'Request Timeout',
   409: 'Conflict',
   410: 'Gone',
-  418: 'I\'m a teapot',
+  418: "I'm a teapot",
   500: 'Internal Server Error',
   501: 'Not implemented',
   502: 'Bad Gateway',
@@ -65,7 +65,6 @@ function respond(msg, data) {
     if (data) {
       response.data = data
     }
-
   } else {
     response.data = msg
   }
@@ -79,11 +78,14 @@ function respond(msg, data) {
  * @param  {object} [override]
  */
 function custom(override) {
-  let response = Object.assign({
-    message: '',
-    status: '',
-    data: null
-  }, override)
+  let response = Object.assign(
+    {
+      message: '',
+      status: '',
+      data: null
+    },
+    override
+  )
 
   // If there isn't a status already, try to populate
   // a default status for the status code
