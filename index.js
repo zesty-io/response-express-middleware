@@ -54,8 +54,8 @@ const statusMessages = {
  * @param {string} [msg]
  * @param {object} [body]
  */
-function respond(msg, data) {
-  let response = {}
+function respond(msg, data, meta = {}) {
+  let response = { meta }
 
   if (typeof msg === typeof '') {
     response.message = msg
