@@ -52,6 +52,34 @@ test.cb('Respond with a custom message and data', t => {
     })
 })
 
+test.cb('Respond with a custom message, data and meta', t => {
+  t.plan(1)
+
+  app.get('/meta', function(req, res) {
+    res.status(200).respond(
+      'message',
+      {
+        test: true
+      },
+      {
+        metaProp: 'meta'
+      }
+    )
+  })
+
+  request(app)
+    .get('/meta')
+    .expect(200)
+    .expect('Content-Type', /json/)
+    .end((e, res) => {
+      if (e) {
+        t.fail(e.message)
+      }
+      t.is(res.body.meta.metaProp, 'meta')
+      t.end()
+    })
+})
+
 test.cb('Respond with just data. No message is sent.', t => {
   t.plan(2)
 
